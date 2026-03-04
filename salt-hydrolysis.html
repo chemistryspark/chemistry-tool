@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Salt Hydrolysis Calculator | Chemistry Spark</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+--bg1:#0f2027; --bg2:#203a43; --bg3:#2c5364;
+--card:rgba(255,255,255,0.08); --text:#ffffff; --accent:#00ffd5;
+}
+
+/* FIX 1: Prevent horizontal scroll and layout overflow */
+*{ box-sizing: border-box; }
+
+body{
+margin:0; font-family: 'Segoe UI', Roboto, sans-serif;
+background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+color:var(--text); overflow-x: hidden;
+}
+
+.wrapper{
+min-height:100vh; display:flex; justify-content:center;
+align-items:center; padding:15px;
+}
+
+.card{
+width:100%; max-width:600px; background:var(--card);
+padding:25px; border-radius:20px;
+box-shadow:0 20px 60px rgba(0,0,0,0.6);
+backdrop-filter:blur(15px); border: 1px solid rgba(255,255,255,0.1);
+}
+
+h2{text-align:center; margin-bottom:20px; color: var(--accent); font-size: 1.5rem;}
+
+label{ display: block; margin-bottom: 5px; font-size: 0.85rem; color: #ccc; }
+
+input, select{
+width:100%; padding:12px; margin-bottom:15px;
+border-radius:10px; border:1px solid rgba(255,255,255,0.2);
+background:rgba(0,0,0,0.2); color:white; outline: none;
+}
+
+input:focus{ border-color: var(--accent); }
+
+button{
+width:100%; padding:14px; border:none; border-radius:12px;
+background:linear-gradient(180deg,#00ffd5,#00a8ff);
+font-weight:bold; color: #000; cursor:pointer;
+text-transform: uppercase; transition: 0.3s;
+}
+
+button:hover{ transform: scale(1.02); }
+
+.result-box{
+margin-top:20px; text-align:center;
+background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px;
+display: none;
+}
+
+.result-box.show{ display: block; }
+
+#resultText{ font-size: 24px; color: var(--accent); font-weight: bold; }
+
+.nature-tag { 
+    display: inline-block; padding: 4px 12px; border-radius: 50px; 
+    font-size: 0.8rem; margin-top: 5px; font-weight: bold;
+}
+
+.steps{
+margin-top:15px; font-size:13px; line-height: 1.6;
+white-space:pre-wrap; background:rgba(0,0,0,0.4);
+padding:15px; border-radius:10px; border-left: 3px solid var(--accent);
+}
+
+/* FIX 2: Responsive Chart Container */
+.chart-container {
+    position: relative; height: 200px; width: 100%; margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+<div class="wrapper">
+<div class="card">
+<h2>Salt Hydrolysis Pro</h2>
+
+<label>Type of Salt</label>
+<select id="saltType" onchange="toggleInputs()">
+<option value="ss">Strong Acid + Strong Base (e.g. NaCl)</option>
+<option value="ws">Weak Acid + Strong Base (e.g. CH₃COONa)</option>
+<option value="sw">Strong Acid + Weak Base (e.g. NH₄Cl)</option>
+<option value="ww">Weak Acid + Weak Base (e.g. CH₃COONH₄)</option>
+</select>
+
+<label>Concentration of Salt (M)</label>
+<input type="number" id="conc" placeholder="e.g. 0.1">
+
+<div id="ka_input" style="display:none;">
+    <label>Dissociation Constant (Ka)</label>
+    <input type="number" id="Ka" placeholder="e.g. 1.8e-5">
+</div>
+
+<div id="kb_input" style="display:none;">
+    <label>Dissociation Constant (Kb)</label>
+    <input type="number" id="Kb" placeholder="e.g. 1.8e-5">
+</div>
+
+<label>Temperature (°C)</label>
+<input type="number" id="temp" value="25">
+
+<button onclick="calculateSalt()">Calculate pH & Steps</button>
+
+<div id="resultBox" class="result-box">
+    <div id="resultText"></div>
+    <div id="natureTag" class="nature-tag"></div>
+    <div id="steps" class="steps"></div>
+    <div class="chart-container">
+        <canvas id="graph"></canvas>
+    </div>
+</div>
+
+</div>
+</div>
+
+<script>
+let chart=null;
+
+function toggleInputs() {
+    const type = document.getElementById("saltType").value;
+    document.getElementById("ka_input").style.display = (type === "ws" || type === "ww") ? "block" : "none";
+    document.getElementById("kb_input").style.display = (type === "sw" || type === "ww") ? "block" : "none";
+}
+
+function KwTemp(T){
+    // Precise Kw calculation based on temp
+    return 1e-14 * Math.exp(-0.01 * (T - 25)); 
+}
+
+function calculateSalt(){
+    let type=document.getElementById("saltType").value;
+    let C=parseFloat(document.getElementById("conc").value);
+    let Ka=parseFloat(document.getElementById("Ka").value);
+    let Kb=parseFloat(document.getElementById("Kb").value);
+    let T=parseFloat(document.getElementById("temp").value) || 25;
+
+    if(!C && type !== "ss"){alert("Please enter Concentration"); return;}
+
+    let Kw=KwTemp(T);
+    let pH, h, nature, steps = "";
+    
+    steps += `At Temp: ${T}°C, Kw = ${Kw.toExponential(2)}\n`;
+
+    if(type==="ss"){
+        pH=7; nature="Neutral";
+        steps += "• Nature: SA + SB Salt (No Hydrolysis)\n• pH is independent of Concentration.\n• pH = -log√(Kw) = 7.00";
+    }
+    else if(type==="ws"){
+        let Kh = Kw/Ka;
+        h = Math.sqrt(Kh/C);
+        pH = 7 + 0.5*(Math.log10(Ka)) + 0.5*(Math.log10(C)); // Simplified pH formula
+        pH = 14 + Math.log10(h*C); // Recalculated for accuracy
+        // Standard formula: pH = 7 + 1/2 pKa + 1/2 log C
+        let pKa = -Math.log10(Ka);
+        pH = 7 + 0.5*pKa + 0.5*Math.log10(C);
+        nature="Basic";
+        steps += `• Nature: WA + SB (Anionic Hydrolysis)\n`;
+        steps += `• Kh (Kw/Ka) = ${Kh.toExponential(3)}\n`;
+        steps += `• Degree of Hydrolysis (h) = ${h.toExponential(3)}\n`;
+        steps += `• Formula: pH = 7 + ½pKa + ½logC`;
+    }
+    else if(type==="sw"){
+        let Kh = Kw/Kb;
+        h = Math.sqrt(Kh/C);
+        let pKb = -Math.log10(Kb);
+        pH = 7 - 0.5*pKb - 0.5*Math.log10(C);
+        nature="Acidic";
+        steps += `• Nature: SA + WB (Cationic Hydrolysis)\n`;
+        steps += `• Kh (Kw/Kb) = ${Kh.toExponential(3)}\n`;
+        steps += `• Degree of Hydrolysis (h) = ${h.toExponential(3)}\n`;
+        steps += `• Formula: pH = 7 - ½pKb - ½logC`;
+    }
+    else {
+        let pKa = -Math.log10(Ka);
+        let pKb = -Math.log10(Kb);
+        pH = 7 + 0.5*pKa - 0.5*pKb;
+        nature = (pH > 7.1) ? "Basic" : (pH < 6.9 ? "Acidic" : "Neutral");
+        steps += `• Nature: WA + WB (Both Hydrolyze)\n`;
+        steps += `• Degree (h) is concentration independent.\n`;
+        steps += `• Formula: pH = 7 + ½pKa - ½pKb`;
+    }
+
+    // UI Updates
+    document.getElementById("resultBox").classList.add("show");
+    document.getElementById("resultText").innerText = "pH = " + pH.toFixed(2);
+    document.getElementById("steps").innerText = steps;
+    
+    const tag = document.getElementById("natureTag");
+    tag.innerText = nature;
+    tag.style.background = nature === "Acidic" ? "#ff4d4d" : (nature === "Basic" ? "#4d79ff" : "#444");
+
+    drawGraph(pH);
+}
+
+function drawGraph(pH){
+    let ctx=document.getElementById("graph").getContext("2d");
+    if(chart){chart.destroy();}
+
+    // Color bar based on pH
+    let barColor = pH < 7 ? "rgba(255, 77, 77, 0.8)" : "rgba(77, 121, 255, 0.8)";
+    if(Math.abs(pH-7) < 0.2) barColor = "rgba(0, 255, 213, 0.8)";
+
+    chart=new Chart(ctx,{
+        type:"bar",
+        data:{
+            labels:["pH Scale"],
+            datasets:[{
+                data:[pH],
+                backgroundColor: barColor,
+                borderRadius: 10
+            }]
+        },
+        options:{
+            indexAxis:"y",
+            maintainAspectRatio: false,
+            plugins:{legend:{display:false}},
+            scales:{
+                x:{min:0,max:14,ticks:{color:"#ccc"}, grid:{color:"rgba(255,255,255,0.1)"}},
+                y:{display: false}
+            }
+        }
+    });
+}
+
+// Initialize view
+toggleInputs();
+</script>
+</body>
+</html>
