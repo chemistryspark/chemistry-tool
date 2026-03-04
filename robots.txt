@@ -1,1 +1,3 @@
-
+User-agent: *
+Allow: /
+Sitemap: https://chemistryspark.github.io/chemistry-tool/sitemap.xml
