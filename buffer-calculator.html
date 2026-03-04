@@ -115,10 +115,42 @@ canvas{
     width: 100% !important;
     height: 100% !important;
 }
+    /* Header Styles - Matches index.html */
+.navbar {
+    background: rgba(15, 23, 42, 0.8) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    height: 70px;
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 0 20px;
+}
+
+.brand-text {
+    font-weight: 800;
+    font-size: 1.2rem;
+    background: linear-gradient(45deg, #007bff, #00ffd5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-decoration: none;
+}
+
+/* Adjust wrapper to not hide under fixed header */
+.wrapper, .container {
+    margin-top: 80px !important;
+}
 </style>
 </head>
 
 <body>
+    <nav class="navbar">
+    <a class="brand-text" href="index.html">Chemistry Spark Lab</a>
+</nav>
 <div class="wrapper">
 <div class="card">
 <h2>Buffer Calculator</h2>
