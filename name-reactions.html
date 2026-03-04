@@ -1,1 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>50+ Name Reactions & Mechanisms | Chemistry Spark Lab</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --accent-cyan: #00ffd5; --accent-blue: #007bff; --bg-dark: #0f172a; }
+        body { background: var(--bg-dark); color: white; font-family: 'Inter', sans-serif; padding-top: 80px; }
+        
+        .navbar { 
+            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px);
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
 
+        .reaction-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px; transition: 0.3s; cursor: pointer; height: 100%;
+        }
+        .reaction-card:hover { transform: translateY(-5px); border-color: var(--accent-cyan); box-shadow: 0 10px 30px rgba(0,255,213,0.1); }
+        
+        .search-box {
+            background: rgba(255,255,255,0.05); border: 2px solid var(--accent-cyan);
+            color: white; border-radius: 30px; padding: 15px 25px; font-size: 1.1rem;
+        }
+
+        .mechanism-svg { background: white; padding: 20px; border-radius: 12px; width: 100%; height: auto; margin: 15px 0; }
+        .modal-content { background: #1e293b; border: 1px solid var(--accent-cyan); }
+        .badge-level { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+        .key-point { border-left: 3px solid var(--accent-cyan); background: rgba(0,255,213,0.05); padding: 10px; margin: 10px 0; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar py-3">
+    <div class="container">
+        <a href="index.html" style="text-decoration:none; font-weight:800; font-size:1.4rem; background:linear-gradient(45deg, #007bff, #00ffd5); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Chemistry Spark Lab</a>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold mb-3">Organic Name Reactions</h1>
+        <p class="text-muted mb-4">Master 50+ Mechanisms for NEET, JEE, CSIR-NET & GATE</p>
+        <input type="text" id="searchInput" class="form-control search-box w-75 mx-auto" placeholder="Search by name (e.g. Aldol, Cannizzaro, Diels-Alder)...">
+    </div>
+
+    <div class="row g-4" id="reactionGrid">
+        </div>
+</div>
+
+<div class="modal fade" id="mechModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h4 class="modal-title" id="mName"></h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="mContent"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const reactions = [
+    {
+        name: "Aldol Condensation",
+        level: "NEET / JEE",
+        tags: ["Carbonyl", "Enolate"],
+        keyPoints: "Requires α-hydrogen. Formation of β-hydroxy carbonyl followed by dehydration.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">CH3-CHO + CH3-CHO</text>
+                <path d="M 150 25 L 200 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="210" y="30" font-family="Arial" font-size="14" fill="black">CH3-CH(OH)-CH2-CHO</text>
+                <text x="160" y="20" font-family="Arial" font-size="10" fill="blue">OH-</text>
+                <defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" /></marker></defs>
+              </svg>`
+    },
+    {
+        name: "Cannizzaro Reaction",
+        level: "NEET / JEE",
+        tags: ["Disproportionation", "No α-H"],
+        keyPoints: "Self oxidation-reduction of aldehydes lacking α-hydrogen. Fast step is hydride transfer.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">2 HCHO + NaOH</text>
+                <path d="M 150 25 L 200 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="210" y="30" font-family="Arial" font-size="14" fill="black">CH3OH + HCOONa</text>
+              </svg>`
+    },
+    {
+        name: "Diels-Alder Reaction",
+        level: "JEE Adv / JAM",
+        tags: ["Pericyclic", "[4+2] Cycloaddition"],
+        keyPoints: "Concerted mechanism. Diene (4π) + Dienophile (2π). Stereospecific (SYN addition).",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <rect x="20" y="10" width="30" height="50" fill="none" stroke="black" />
+                <text x="60" y="40" font-size="20">+</text>
+                <line x1="90" y1="20" x2="90" y2="50" stroke="black" stroke-width="2"/>
+                <path d="M 120 35 L 180 35" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <polygon points="210,10 240,10 250,35 240,60 210,60 200,35" fill="none" stroke="black"/>
+              </svg>`
+    },
+  {
+        name: "Hoffmann Bromamide Degradation",
+        level: "NEET / JEE",
+        tags: ["Amide to Amine", "Decarboxylation"],
+        keyPoints: "Used to shorten carbon chains by one atom. Intermediate is an Isocyanate. Only primary amides undergo this.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">R-CONH2 + Br2 + 4KOH</text>
+                <path d="M 160 25 L 210 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="220" y="30" font-family="Arial" font-size="14" fill="black">R-NH2 + K2CO3 + 2KBr</text>
+                <text x="165" y="15" font-family="Arial" font-size="10" fill="red">Degradation</text>
+              </svg>`
+    },
+    {
+        name: "Reimer-Tiemann Reaction",
+        level: "NEET / JEE",
+        tags: ["Phenol", "Salicylaldehyde"],
+        keyPoints: "Electrophile is Dichlorocarbene (:CCl2). Attack occurs primarily at the ortho position due to chelation.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Phenol + CHCl3 / KOH</text>
+                <path d="M 160 25 L 210 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="220" y="30" font-family="Arial" font-size="14" fill="black">Salicylaldehyde (ortho)</text>
+              </svg>`
+    },
+    {
+        name: "Rosenmund Reduction",
+        level: "NEET / JEE",
+        tags: ["Acyl Halide", "Aldehyde"],
+        keyPoints: "Uses Lindlar's Catalyst (Pd/BaSO4) poisoned with S or Quinoline to prevent further reduction to alcohol.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">R-COCl + H2</text>
+                <path d="M 120 25 L 170 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="180" y="30" font-family="Arial" font-size="14" fill="black">R-CHO + HCl</text>
+                <text x="125" y="15" font-family="Arial" font-size="9" fill="blue">Pd / BaSO4</text>
+              </svg>`
+    },
+    {
+        name: "Clemmensen Reduction",
+        level: "NEET / JEE",
+        tags: ["Carbonyl", "Alkane"],
+        keyPoints: "Uses Zinc Amalgam (Zn/Hg) and conc. HCl. Ideal for acid-stable molecules.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">>C=O</text>
+                <path d="M 60 25 L 110 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="120" y="30" font-family="Arial" font-size="14" fill="black">-CH2-</text>
+                <text x="65" y="15" font-family="Arial" font-size="9" fill="blue">Zn-Hg / HCl</text>
+              </svg>`
+    },
+    {
+        name: "Wolff-Kishner Reduction",
+        level: "NEET / JEE",
+        tags: ["Carbonyl", "Alkane", "Hydrazine"],
+        keyPoints: "Uses Hydrazine (NH2NH2) and KOH. Ideal for base-stable molecules. Nitrogen gas is evolved.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">>C=O</text>
+                <path d="M 60 25 L 110 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="120" y="30" font-family="Arial" font-size="14" fill="black">-CH2- + N2</text>
+                <text x="65" y="15" font-family="Arial" font-size="9" fill="blue">NH2NH2 / KOH</text>
+              </svg>`
+    },
+    {
+        name: "Gabriel Phthalimide Synthesis",
+        level: "NEET / JEE",
+        tags: ["Primary Amine", "Nucleophilic Substitution"],
+        keyPoints: "Used to prepare pure aliphatic primary amines. Aniline cannot be prepared this way (Aryl halides don't react).",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="12" fill="black">Phthalimide + RX</text>
+                <path d="M 120 25 L 170 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="180" y="30" font-family="Arial" font-size="12" fill="black">Primary Amine (R-NH2)</text>
+              </svg>`
+    },
+    {
+        name: "Etard Reaction",
+        level: "NEET / JEE",
+        tags: ["Toluene", "Benzaldehyde"],
+        keyPoints: "Chromyl chloride (CrO2Cl2) in CS2 forms a brown chromium complex as an intermediate.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Ph-CH3</text>
+                <path d="M 80 25 L 130 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="140" y="30" font-family="Arial" font-size="14" fill="black">Ph-CHO</text>
+                <text x="85" y="15" font-family="Arial" font-size="9" fill="red">CrO2Cl2</text>
+              </svg>`
+    },
+    {
+        name: "Friedel-Crafts Alkylation",
+        level: "NEET / JEE",
+        tags: ["Electrophilic Substitution", "Carbocation"],
+        keyPoints: "Electrophile is R+. Polyalkylation is a common drawback. Subject to carbocation rearrangements.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Benzene + R-Cl</text>
+                <path d="M 120 25 L 170 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="180" y="30" font-family="Arial" font-size="14" fill="black">Alkyl Benzene</text>
+                <text x="125" y="15" font-family="Arial" font-size="9" fill="blue">Anh. AlCl3</text>
+              </svg>`
+    },
+    {
+        name: "Wurtz-Fittig Reaction",
+        level: "NEET / JEE",
+        tags: ["Aryl Halide", "Alkyl Halide"],
+        keyPoints: "Coupling of an aryl halide and an alkyl halide using Sodium metal in dry ether to form alkyl benzenes.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Ar-X + R-X + 2Na</text>
+                <path d="M 140 25 L 190 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="200" y="30" font-family="Arial" font-size="14" fill="black">Ar-R + 2NaX</text>
+              </svg>`
+    },
+    {
+        name: "Kolbe's Electrolysis",
+        level: "NEET / JEE",
+        tags: ["Carboxylic Acid", "Alkane"],
+        keyPoints: "Electrolysis of sodium/potassium salts of fatty acids. Alkanes are formed at the Anode via free radicals.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">2 R-COONa</text>
+                <path d="M 100 25 L 150 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="160" y="30" font-family="Arial" font-size="14" fill="black">R-R + 2CO2 + H2</text>
+              </svg>`
+    },
+  {
+        name: "Wittig Reaction",
+        level: "IIT-JAM / JEE Adv",
+        tags: ["Alkene", "Phosphorus Ylide"],
+        keyPoints: "Converts aldehydes/ketones into alkenes. Involves a four-membered oxaphosphetane intermediate. High regioselectivity.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">>C=O + Ph3P=CR2</text>
+                <path d="M 140 25 L 190 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="200" y="30" font-family="Arial" font-size="14" fill="black">>C=CR2 + Ph3P=O</text>
+                <text x="145" y="15" font-family="Arial" font-size="9" fill="blue">Ylide attack</text>
+              </svg>`
+    },
+    {
+        name: "Beckmann Rearrangement",
+        level: "IIT-JAM / JEE Adv",
+        tags: ["Oxime", "Amide", "Rearrangement"],
+        keyPoints: "Conversion of oximes to substituted amides. The group 'anti' to the hydroxyl group always migrates.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">R2C=N-OH</text>
+                <path d="M 100 25 L 150 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="160" y="30" font-family="Arial" font-size="14" fill="black">R-CONHR</text>
+                <text x="105" y="15" font-family="Arial" font-size="9" fill="red">H+ / PCl5</text>
+              </svg>`
+    },
+    {
+        name: "Baeyer-Villiger Oxidation",
+        level: "IIT-JAM / JEE Adv",
+        tags: ["Ketone to Ester", "Peroxyacid"],
+        keyPoints: "Ketones are converted to esters using mCPBA. Migratory aptitude: Tertiary > Secondary > Primary > Methyl.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">R-CO-R' + mCPBA</text>
+                <path d="M 140 25 L 190 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="200" y="30" font-family="Arial" font-size="14" fill="black">R-COO-R'</text>
+              </svg>`
+    },
+    {
+        name: "Claisen Condensation",
+        level: "IIT-JAM / JEE Adv",
+        tags: ["Ester", "Beta-Keto Ester"],
+        keyPoints: "Base-catalyzed self-condensation of esters having alpha-hydrogens. Example: Ethyl acetate to Ethyl acetoacetate.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">2 R-CH2COOR</text>
+                <path d="M 140 25 L 190 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="200" y="30" font-family="Arial" font-size="14" fill="black">R-CH2COCH(R)COOR</text>
+              </svg>`
+    },
+    {
+        name: "Michael Addition",
+        level: "IIT-JAM / JEE Adv",
+        tags: ["Conjugate Addition", "Enolate"],
+        keyPoints: "1,4-addition of a nucleophile (Michael donor) to an alpha,beta-unsaturated carbonyl (Michael acceptor).",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Enolate + C=C-C=O</text>
+                <path d="M 140 25 L 190 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="200" y="30" font-family="Arial" font-size="14" fill="black">1,4-Adduct</text>
+              </svg>`
+    },
+    {
+        name: "Hell-Volhard-Zelinsky (HVZ)",
+        level: "IIT-JAM / JEE Adv",
+        tags: ["Carboxylic Acid", "Alpha-Halogenation"],
+        keyPoints: "Halogenation of the alpha-carbon of carboxylic acids using P and X2. Only acids with alpha-H react.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">R-CH2COOH</text>
+                <path d="M 100 25 L 150 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="160" y="30" font-family="Arial" font-size="14" fill="black">R-CH(X)COOH</text>
+                <text x="105" y="15" font-family="Arial" font-size="9" fill="red">X2 / Red P</text>
+              </svg>`
+    },
+    {
+        name: "Perkin Reaction",
+        level: "IIT-JAM / JEE Adv",
+        tags: ["Cinnamic Acid", "Anhydride"],
+        keyPoints: "Condensation of an aromatic aldehyde and an acid anhydride in the presence of the sodium salt of the acid.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="12" fill="black">Ph-CHO + (CH3CO)2O</text>
+                <path d="M 130 25 L 180 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="190" y="30" font-family="Arial" font-size="12" fill="black">Ph-CH=CH-COOH</text>
+              </svg>`
+    },
+    {
+        name: "Arndt-Eistert Synthesis",
+        level: "IIT-JAM / GATE",
+        tags: ["Homologation", "Diazomethane"],
+        keyPoints: "Converts a carboxylic acid to its next higher homologue. Involves a Wolff rearrangement of a diazoketone.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">R-COOH</text>
+                <path d="M 80 25 L 130 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="140" y="30" font-family="Arial" font-size="14" fill="black">R-CH2COOH</text>
+                <text x="85" y="15" font-family="Arial" font-size="9" fill="blue">CH2N2 / H2O</text>
+              </svg>`
+    },
+    {
+        name: "Reformatsky Reaction",
+        level: "IIT-JAM / JEE Adv",
+        tags: ["Organozinc", "Beta-Hydroxy Ester"],
+        keyPoints: "Condensation of an aldehyde/ketone with an alpha-halo ester using Zinc metal. Zinc enolate is the intermediate.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="12" fill="black">R2C=O + Br-CH2COOR</text>
+                <path d="M 140 25 L 190 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="200" y="30" font-family="Arial" font-size="12" fill="black">Beta-Hydroxy Ester</text>
+                <text x="155" y="15" font-family="Arial" font-size="9" fill="blue">Zn / Ether</text>
+              </svg>`
+    },
+    {
+        name: "Benzoin Condensation",
+        level: "IIT-JAM / JEE Adv",
+        tags: ["Cyanide Catalyst", "Aromatic Aldehyde"],
+        keyPoints: "Cyanide-catalyzed coupling of two aromatic aldehydes to form a benzoin (alpha-hydroxy ketone).",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">2 Ph-CHO</text>
+                <path d="M 80 25 L 130 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="140" y="30" font-family="Arial" font-size="14" fill="black">Ph-CH(OH)-CO-Ph</text>
+                <text x="90" y="15" font-family="Arial" font-size="9" fill="red">KCN (alc.)</text>
+              </svg>`
+    },
+  {
+        name: "Suzuki Coupling",
+        level: "CSIR-NET / GATE",
+        tags: ["Palladium", "Organoboron", "C-C Bond"],
+        keyPoints: "Pd-catalyzed coupling of an aryl/vinyl halide with an organoboronic acid. Base (like Na2CO3) is essential for transmetallation.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">R1-X + R2-B(OH)2</text>
+                <path d="M 140 25 L 190 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="200" y="30" font-family="Arial" font-size="14" fill="black">R1-R2 + B(OH)3</text>
+                <text x="145" y="15" font-family="Arial" font-size="9" fill="blue">Pd(0) / Base</text>
+              </svg>`
+    },
+    {
+        name: "Heck Reaction",
+        level: "CSIR-NET / GATE",
+        tags: ["Palladium", "Alkene", "Substitution"],
+        keyPoints: "Pd-catalyzed C-C coupling between an aryl/vinyl halide and an alkene. Follows a catalytic cycle: Oxidative Addition → Syn-insertion → Beta-hydride elimination.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Ar-X + CH2=CH-R</text>
+                <path d="M 140 25 L 190 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="200" y="30" font-family="Arial" font-size="14" fill="black">Ar-CH=CH-R</text>
+                <text x="145" y="15" font-family="Arial" font-size="9" fill="blue">Pd cat. / Et3N</text>
+              </svg>`
+    },
+    {
+        name: "Favorskii Rearrangement",
+        level: "CSIR-NET / GATE",
+        tags: ["Alpha-Halo Ketone", "Ring Contraction"],
+        keyPoints: "Rearrangement of alpha-halo ketones in the presence of a base to form carboxylic acid derivatives. Involves a cyclopropanone intermediate.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="13" fill="black">Alpha-Halo Ketone</text>
+                <path d="M 130 25 L 180 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="190" y="30" font-family="Arial" font-size="13" fill="black">Ester / Acid</text>
+                <text x="135" y="15" font-family="Arial" font-size="9" fill="red">RO- / OH-</text>
+              </svg>`
+    },
+    {
+        name: "Mitsunobu Reaction",
+        level: "CSIR-NET / GATE",
+        tags: ["Alcohol", "Inversion", "DEAD"],
+        keyPoints: "Converts an alcohol into various functional groups (like esters) with complete inversion of configuration using DEAD and PPh3.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">R-OH + Nu-H</text>
+                <path d="M 110 25 L 160 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="170" y="30" font-family="Arial" font-size="14" fill="black">R-Nu (Inverted)</text>
+                <text x="115" y="15" font-family="Arial" font-size="9" fill="blue">DEAD / PPh3</text>
+              </svg>`
+    },
+    {
+        name: "Stille Coupling",
+        level: "CSIR-NET / GATE",
+        tags: ["Palladium", "Organotin", "C-C Bond"],
+        keyPoints: "Palladium-catalyzed coupling of an organostannane with an organic halide. Highly versatile but organotin compounds are toxic.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">R1-X + R2-SnBu3</text>
+                <path d="M 130 25 L 180 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="190" y="30" font-family="Arial" font-size="14" fill="black">R1-R2 + X-SnBu3</text>
+              </svg>`
+    },
+    {
+        name: "Shapiro Reaction",
+        level: "CSIR-NET / GATE",
+        tags: ["Tosylhydrazone", "Vinyllithium"],
+        keyPoints: "Conversion of ketones to alkenes via tosylhydrazone intermediates using strong base (n-BuLi). Involves vinyllithium species.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Tosylhydrazone</text>
+                <path d="M 110 25 L 160 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="170" y="30" font-family="Arial" font-size="14" fill="black">Alkene (Less Sub.)</text>
+                <text x="115" y="15" font-family="Arial" font-size="9" fill="red">2 eq. n-BuLi</text>
+              </svg>`
+    },
+    {
+        name: "Simmons-Smith Reaction",
+        level: "CSIR-NET / GATE",
+        tags: ["Cyclopropanation", "Carbenoid"],
+        keyPoints: "Conversion of an alkene to a cyclopropane using CH2I2 and Zn-Cu couple. It is a concerted, stereospecific syn-addition.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">>C=C<</text>
+                <path d="M 60 25 L 110 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="120" y="30" font-family="Arial" font-size="14" fill="black">Cyclopropane</text>
+                <text x="65" y="15" font-family="Arial" font-size="9" fill="blue">CH2I2 / Zn(Cu)</text>
+              </svg>`
+    },
+    {
+        name: "Curtius Rearrangement",
+        level: "CSIR-NET / GATE",
+        tags: ["Acyl Azide", "Isocyanate"],
+        keyPoints: "Thermal decomposition of an acyl azide to an isocyanate, which can be hydrolyzed to a primary amine. Similar to Hoffmann.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">R-CON3</text>
+                <path d="M 80 25 L 130 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="140" y="30" font-family="Arial" font-size="14" fill="black">R-N=C=O + N2</text>
+                <text x="90" y="15" font-family="Arial" font-size="9" fill="red">Heat (Δ)</text>
+              </svg>`
+    },
+    {
+        name: "Dakin Reaction",
+        level: "CSIR-NET / GATE",
+        tags: ["Phenolic Aldehyde", "Catechol"],
+        keyPoints: "Oxidation of ortho- or para-hydroxylated phenyl aldehydes or ketones to form benzenediols (catechols/quinols).",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">o-HO-Ph-CHO</text>
+                <path d="M 110 25 L 160 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="170" y="30" font-family="Arial" font-size="14" fill="black">Catechol</text>
+                <text x="115" y="15" font-family="Arial" font-size="9" fill="blue">H2O2 / NaOH</text>
+              </svg>`
+    },
+    {
+        name: "Mannich Reaction",
+        level: "CSIR-NET / GATE",
+        tags: ["Beta-Amino Carbonyl", "Enolizable Ketone"],
+        keyPoints: "Multicomponent condensation of an enolizable ketone, formaldehyde, and a primary/secondary amine. Forms a 'Mannich Base'.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="12" fill="black">R2NH + HCHO + Ketone</text>
+                <path d="M 140 25 L 190 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="200" y="30" font-family="Arial" font-size="12" fill="black">Beta-Amino Ketone</text>
+              </svg>`
+    },
+  {
+        name: "Dakin-West Reaction",
+        level: "CSIR-NET / GATE",
+        tags: ["Amino Acid", "Keto-Amide"],
+        keyPoints: "Conversion of an amino acid into a keto-amide using an acid anhydride and a base (pyridine). Involves an oxazolone intermediate.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Amino Acid + Ac2O</text>
+                <path d="M 130 25 L 180 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="190" y="30" font-family="Arial" font-size="14" fill="black">alpha-acetamido ketone</text>
+                <text x="135" y="15" font-family="Arial" font-size="9" fill="blue">Pyridine / Δ</text>
+              </svg>`
+    },
+    {
+        name: "Eschweiler-Clarke Methylation",
+        level: "CSIR-NET / GATE",
+        tags: ["Amine", "Methylation"],
+        keyPoints: "Reductive methylation of primary or secondary amines to tertiary amines using formaldehyde and excess formic acid.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">R-NH2 + HCHO</text>
+                <path d="M 110 25 L 160 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="170" y="30" font-family="Arial" font-size="14" fill="black">R-N(CH3)2</text>
+                <text x="115" y="15" font-family="Arial" font-size="9" fill="red">HCOOH</text>
+              </svg>`
+    },
+    {
+        name: "Grubbs Metathesis",
+        level: "CSIR-NET / GATE",
+        tags: ["Olefin Metathesis", "Ruthenium"],
+        keyPoints: "Redistribution of alkane fragments using Ruthenium-carbene catalysts. Essential for making large rings (RCM).",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">2 Alkenes</text>
+                <path d="M 80 25 L 130 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="140" y="30" font-family="Arial" font-size="14" fill="black">New Alkenes + Ethene</text>
+                <text x="85" y="15" font-family="Arial" font-size="9" fill="blue">Grubbs Cat.</text>
+              </svg>`
+    },
+    {
+        name: "Hofmann-Loffler-Freytag",
+        level: "CSIR-NET / GATE",
+        tags: ["N-Haloamine", "Pyrrolidine"],
+        keyPoints: "Conversion of N-haloamines to cyclic amines (pyrrolidines) via a radical mechanism (1,5-H shift).",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">N-Chloroamine</text>
+                <path d="M 110 25 L 160 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="170" y="30" font-family="Arial" font-size="14" fill="black">Pyrrolidine Ring</text>
+                <text x="115" y="15" font-family="Arial" font-size="9" fill="red">hv / H2SO4</text>
+              </svg>`
+    },
+    {
+        name: "Julia Olefination",
+        level: "CSIR-NET / GATE",
+        tags: ["Sulfone", "E-Alkene"],
+        keyPoints: "Reaction of phenyl sulfones with aldehydes/ketones to give (E)-alkenes after reduction with Na/Hg.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Sulfone + Aldehyde</text>
+                <path d="M 130 25 L 180 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="190" y="30" font-family="Arial" font-size="14" fill="black">(E)-Alkene</text>
+                <text x="135" y="15" font-family="Arial" font-size="9" fill="blue">1. n-BuLi 2. Na-Hg</text>
+              </svg>`
+    },
+    {
+        name: "Nazarov Cyclization",
+        level: "CSIR-NET / GATE",
+        tags: ["Divinyl Ketone", "Cyclopentenone"],
+        keyPoints: "Electrocyclic ring closure of divinyl ketones to cyclopentenones using Lewis acids (4π system).",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Divinyl Ketone</text>
+                <path d="M 110 25 L 160 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="170" y="30" font-family="Arial" font-size="14" fill="black">Cyclopentenone</text>
+                <text x="115" y="15" font-family="Arial" font-size="9" fill="red">Lewis Acid</text>
+              </svg>`
+    },
+    {
+        name: "Pauson-Khand Reaction",
+        level: "CSIR-NET / GATE",
+        tags: ["Alkyne", "Alkene", "CO"],
+        keyPoints: "A [2+2+1] cycloaddition of an alkyne, an alkene, and carbon monoxide to form cyclopentenones.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Alkyne+Alkene+CO</text>
+                <path d="M 130 25 L 180 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="190" y="30" font-family="Arial" font-size="14" fill="black">Cyclopentenone</text>
+                <text x="135" y="15" font-family="Arial" font-size="9" fill="blue">Co2(CO)8</text>
+              </svg>`
+    },
+    {
+        name: "Prilezhaev Reaction",
+        level: "NEET / JEE / JAM",
+        tags: ["Epoxidation", "Alkene"],
+        keyPoints: "Synthesis of epoxides from alkenes using peroxyacids (mCPBA). Syn-addition mechanism.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Alkene + mCPBA</text>
+                <path d="M 110 25 L 160 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="170" y="30" font-family="Arial" font-size="14" fill="black">Epoxide</text>
+              </svg>`
+    },
+    {
+        name: "Robinson Annulation",
+        level: "IIT-JAM / CSIR",
+        tags: ["Michael Addition", "Aldol"],
+        keyPoints: "A two-step reaction (Michael addition + Intramolecular Aldol) to form six-membered enones.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Ketone + MVK</text>
+                <path d="M 110 25 L 160 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="170" y="30" font-family="Arial" font-size="14" fill="black">Fused Ring Enone</text>
+                <text x="115" y="15" font-family="Arial" font-size="9" fill="red">Base (NaOEt)</text>
+              </svg>`
+    },
+    {
+        name: "Sharpless Epoxidation",
+        level: "CSIR-NET / GATE",
+        tags: ["Asymmetric", "Chiral Alcohol"],
+        keyPoints: "Enantioselective synthesis of 2,3-epoxyalcohols from allylic alcohols using Ti(O-iPr)4 and DET.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="13" fill="black">Allylic Alcohol</text>
+                <path d="M 100 25 L 150 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="160" y="30" font-family="Arial" font-size="13" fill="black">Chiral Epoxide</text>
+                <text x="105" y="15" font-family="Arial" font-size="9" fill="blue">DET / Ti(OiPr)4</text>
+              </svg>`
+    },
+    {
+        name: "Sonn-Muller Method",
+        level: "CSIR-NET / GATE",
+        tags: ["Amide to Aldehyde"],
+        keyPoints: "Conversion of an aromatic secondary amide to an aldehyde via an imino-chloride intermediate.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Ar-CONH-Ph</text>
+                <path d="M 110 25 L 160 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="170" y="30" font-family="Arial" font-size="14" fill="black">Ar-CHO</text>
+                <text x="115" y="15" font-family="Arial" font-size="9" fill="red">PCl5 / SnCl2 / HCl</text>
+              </svg>`
+    },
+    {
+        name: "Tishchenko Reaction",
+        level: "CSIR-NET / GATE",
+        tags: ["Aldehyde to Ester"],
+        keyPoints: "Disproportionation of aldehydes lacking alpha-H into esters using aluminum alkoxide catalysts.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">2 R-CHO</text>
+                <path d="M 80 25 L 130 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="140" y="30" font-family="Arial" font-size="14" fill="black">R-COOCH2-R</text>
+                <text x="85" y="15" font-family="Arial" font-size="9" fill="blue">Al(OR)3</text>
+              </svg>`
+    },
+    {
+        name: "Ugi Reaction",
+        level: "CSIR-NET / GATE",
+        tags: ["Multicomponent", "Bis-amide"],
+        keyPoints: "Four-component reaction involving a ketone, amine, isocyanide, and carboxylic acid to form bis-amides.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">4-Comp Mix</text>
+                <path d="M 100 25 L 150 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="160" y="30" font-family="Arial" font-size="14" fill="black">Peptide-like Bis-amide</text>
+              </svg>`
+    },
+    {
+        name: "Vilsmeier-Haack",
+        level: "CSIR-NET / GATE",
+        tags: ["Formylation", "Aromatic"],
+        keyPoints: "Electrophilic aromatic substitution to add a formyl group using POCl3 and DMF. Electrophile is the 'Vilsmeier Reagent'.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Ar-H</text>
+                <path d="M 60 25 L 110 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="120" y="30" font-family="Arial" font-size="14" fill="black">Ar-CHO</text>
+                <text x="65" y="15" font-family="Arial" font-size="9" fill="red">POCl3 / DMF</text>
+              </svg>`
+    },
+    {
+        name: "Wacker Process",
+        level: "CSIR-NET / GATE",
+        tags: ["Ethylene to Acetaldehyde"],
+        keyPoints: "Industrial oxidation of ethylene to acetaldehyde using PdCl2 and CuCl2 catalysts in water.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">CH2=CH2 + 0.5 O2</text>
+                <path d="M 130 25 L 180 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="190" y="30" font-family="Arial" font-size="14" fill="black">CH3CHO</text>
+                <text x="135" y="15" font-family="Arial" font-size="9" fill="blue">Pd/Cu catalyst</text>
+              </svg>`
+    },
+    {
+        name: "Ziegler-Natta Polymerization",
+        level: "NEET / JEE / GATE",
+        tags: ["Polyethylene", "Coordination"],
+        keyPoints: "Coordination polymerization of alkenes to form high-density linear polymers using TiCl4 and Al(C2H5)3.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">n CH2=CH2</text>
+                <path d="M 100 25 L 150 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="160" y="30" font-family="Arial" font-size="14" fill="black">-(CH2-CH2)n-</text>
+              </svg>`
+    },
+    {
+        name: "Sommelet-Hauser",
+        level: "CSIR-NET / GATE",
+        tags: ["Rearrangement", "Ylide"],
+        keyPoints: "Rearrangement of quaternary ammonium salts containing a benzyl group to an ortho-substituted benzyl amine.",
+        svg: `<svg viewBox="0 0 400 120" class="mechanism-svg">
+                <text x="10" y="30" font-family="Arial" font-size="14" fill="black">Quaternary Salt</text>
+                <path d="M 110 25 L 160 25" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="170" y="30" font-family="Arial" font-size="14" fill="black">o-Sub. Benzylamine</text>
+                <text x="115" y="15" font-family="Arial" font-size="9" fill="red">NaNH2 (Base)</text>
+              </svg>`
+    }
+];
+
+function render() {
+    const grid = document.getElementById('reactionGrid');
+    grid.innerHTML = reactions.map((r, i) => `
+        <div class="col-md-4">
+            <div class="reaction-card p-4" onclick="openModal(${i})">
+                <span class="badge bg-primary badge-level mb-2">${r.level}</span>
+                <h4 class="mb-2 text-info">${r.name}</h4>
+                <div class="small text-muted mb-3">${r.tags.join(' • ')}</div>
+                <button class="btn btn-sm btn-outline-light w-100">View Mechanism</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function openModal(index) {
+    const r = reactions[index];
+    document.getElementById('mName').innerText = r.name;
+    document.getElementById('mContent').innerHTML = `
+        <div class="key-point"><strong>Exam Tip:</strong> ${r.keyPoints}</div>
+        <h6 class="mt-4 text-cyan">Mechanism Visual:</h6>
+        ${r.svg}
+        <p class="mt-3 small text-muted">Each step involves electronic movement (curved arrows). Focus on the Rate Determining Step (RDS) for competitive exams.</p>
+    `;
+    new bootstrap.Modal(document.getElementById('mechModal')).show();
+}
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const cards = document.querySelectorAll('.col-md-4');
+    cards.forEach(card => {
+        const name = card.querySelector('h4').innerText.toLowerCase();
+        card.style.display = name.includes(term) ? 'block' : 'none';
+    });
+});
+
+render();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
