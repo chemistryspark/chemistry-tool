@@ -1,117 +1,88 @@
-
 /**
- * Chemistry Spark Lab - Unified Advanced Solver
- * Optimized for: JEE Advanced & GATE (Polytropic + Variable Cv)
- * Location: js/thermodynamics-solver.js
+ * Chemistry Spark Lab - Ultra-High-Power Thermo Engine
+ * Logic: Based on First, Second, and Third Laws of Thermodynamics
  */
 
-const R = 8.314; // Universal Gas Constant (J/mol·K)
+const R = 8.314; // J/mol·K
 
-class ChemistrySparkSolver {
+class UltraThermoSolver {
     constructor() {
         this.init();
     }
 
     init() {
-        // Link to the "ANALYZE PROCESS" button from your screenshot
-        const thermoBtn = document.querySelector('.btn-solve') || document.getElementById('analyze-btn');
-        if (thermoBtn) {
-            thermoBtn.addEventListener('click', () => this.solveThermodynamics());
-        }
-
-        // Link to the "DETERMINE ISOMER COUNT" button
-        const isomerBtn = document.getElementById('determine-isomer-btn');
-        if (isomerBtn) {
-            isomerBtn.addEventListener('click', () => this.solveIsomers());
+        const analyzeBtn = document.getElementById('analyze-btn');
+        if (analyzeBtn) {
+            analyzeBtn.addEventListener('click', () => this.executeAnalysis());
         }
     }
 
-    // --- 1. THERMODYNAMICS ENGINE (JEE ADVANCED / GATE LEVEL) ---
-    solveThermodynamics() {
+    executeAnalysis() {
         try {
-            // Mapping inputs from your specific UI screenshot
+            // Inputs from your UI
             const n = parseFloat(document.getElementById('n').value) || 0;
             const T1 = parseFloat(document.getElementById('t1').value) || 0;
             const T2 = parseFloat(document.getElementById('t2').value) || 0;
             const V1 = parseFloat(document.getElementById('v1').value) || 1;
             const V2 = parseFloat(document.getElementById('v2').value) || 1;
-            const x = parseFloat(document.getElementById('poly_x').value) || 1.4;
-            const cv_a = parseFloat(document.getElementById('cv_a').value) || 12.47;
-            const cv_b = parseFloat(document.getElementById('cv_b').value) || 0;
+            const x = parseFloat(document.getElementById('poly_x').value) || 1;
+            const a = parseFloat(document.getElementById('cv_a').value) || 0;
+            const b = parseFloat(document.getElementById('cv_b').value) || 0;
 
-            // POWER FEATURE: Calculus Integration for Variable Cv
-            // ΔU = n * ∫(a + bT) dT = n * [a(T2-T1) + 0.5b(T2² - T1²)]
-            const deltaU = n * (cv_a * (T2 - T1) + 0.5 * cv_b * (Math.pow(T2, 2) - Math.pow(T1, 2)));
+            // --- ADVANCED CALCULATIONS ---
 
-            // POWER FEATURE: Polytropic Work (Handles Isothermal, Adiabatic, and Custom x)
+            // 1. Internal Energy (ΔU) via Calculus Integration
+            // Logic: ΔU = ∫ n * (a + bT) dT
+            const deltaU = n * (a * (T2 - T1) + 0.5 * b * (Math.pow(T2, 2) - Math.pow(T1, 2)));
+
+            // 2. Work (W) for Polytropic Processes
+            // Formula: W = nR(T2 - T1) / (1 - x)
             let work = 0;
-            if (Math.abs(x - 1) < 1e-5) {
-                // Isothermal Case: W = nRT ln(V2/V1)
-                work = n * R * T1 * Math.log(V2 / V1);
+            if (Math.abs(x - 1) < 1e-4) {
+                // Reversible Isothermal Expansion: W = -2.303nRT log(V2/V1)
+                work = -2.303 * n * R * T1 * Math.log10(V2 / V1);
             } else {
-                // General Polytropic: W = nR(T2 - T1) / (1 - x)
+                // Reversible Adiabatic Expansion: W = nCv dT = nR(T2 - T1) / (gamma - 1)
                 work = (n * R * (T2 - T1)) / (1 - x);
             }
 
-            // 1st Law (Chemistry Convention): Q = ΔU - W
-            const q = deltaU - work;
+            // 3. Enthalpy (ΔH)
+            // Formula: ΔH = ΔU + PΔV = nCp dT
+            const Cp = a + R;
+            const deltaH = n * (Cp * (T2 - T1) + 0.5 * b * (Math.pow(T2, 2) - Math.pow(T1, 2)));
 
-            this.displayThermoResults(deltaU, work, q);
-        } catch (err) {
-            console.error("Thermo Solver Error:", err);
+            // 4. Entropy Change (ΔS)
+            // Formula: ΔS = 2.303nCv log(T2/T1) + 2.303nR log(V2/V1)
+            const dS = (2.303 * n * a * Math.log10(T2 / T1)) + (2.303 * n * R * Math.log10(V2 / V1));
+
+            // 5. Gibbs Free Energy (ΔG)
+            // Formula: ΔG = ΔH - TΔS
+            const deltaG = deltaH - (T2 * dS);
+
+            this.updateDisplay({
+                du: deltaU,
+                dw: work,
+                dh: deltaH,
+                ds: dS,
+                dg: deltaG,
+                spontaneity: deltaG < 0 ? "Spontaneous" : "Non-spontaneous"
+            });
+
+        } catch (e) {
+            console.error("Analysis Failed:", e);
         }
     }
 
-    // --- 2. UNIVERSAL ISOMER ENGINE (FIXING THE DECIMAL BUG) ---
-    solveIsomers() {
-        // Ensuring inputs are treated as Integers to prevent 0.5857... decimals
-        const n = parseInt(document.getElementById('chiral_n').value) || 0;
-        const m = parseInt(document.getElementById('double_m').value) || 0;
-        const sym = document.getElementById('symmetry_type').value;
-
-        let a = 0; // Active
-        let meso = 0; // Meso
-
-        // Strict Formula Implementation from your Reference Guide
-        if (sym === "unsymmetric") {
-            a = Math.pow(2, n);
-            meso = 0;
-        } else if (sym === "sym_even") {
-            a = Math.pow(2, n - 1);
-            meso = Math.pow(2, (n / 2) - 1);
-        } else if (sym === "sym_odd") {
-            // This fix ensures whole numbers for Odd Symmetry
-            meso = Math.pow(2, (n - 1) / 2);
-            a = Math.pow(2, n - 1) - meso;
-        }
-
-        // Apply Geometrical Factor: Total = (a + meso) * 2^m
-        const gi_factor = Math.pow(2, m);
-        const final_a = a * gi_factor;
-        const final_m = meso * gi_factor;
-
-        this.displayIsomerResults(final_a, final_m);
-    }
-
-    // --- 3. UI UPDATES ---
-    displayThermoResults(du, w, q) {
-        // Targets the result IDs from your result-area
-        if(document.getElementById('res_u')) document.getElementById('res_u').innerText = `${du.toFixed(2)} J`;
-        if(document.getElementById('res_w')) document.getElementById('res_w').innerText = `${w.toFixed(2)} J`;
-        if(document.getElementById('res_q')) document.getElementById('res_q').innerText = `${q.toFixed(2)} J`;
+    updateDisplay(data) {
+        document.getElementById('res_u').innerText = data.du.toFixed(2) + " J";
+        document.getElementById('res_w').innerText = data.dw.toFixed(2) + " J";
+        document.getElementById('res_h').innerText = data.dh.toFixed(2) + " J";
+        document.getElementById('res_s').innerText = data.ds.toFixed(4) + " J/K";
+        document.getElementById('res_g').innerText = data.dg.toFixed(2) + " J";
+        document.getElementById('res_spont').innerText = data.spontaneity;
         
-        const resArea = document.getElementById('result-area');
-        if(resArea) resArea.style.display = 'block';
-    }
-
-    displayIsomerResults(a, m) {
-        if(document.getElementById('out_active')) document.getElementById('out_active').innerText = Math.round(a);
-        if(document.getElementById('out_meso')) document.getElementById('out_meso').innerText = Math.round(m);
-        if(document.getElementById('out_total')) document.getElementById('out_total').innerText = Math.round(a + m);
+        document.getElementById('result-area').style.display = 'block';
     }
 }
 
-// Global Initialization
-document.addEventListener('DOMContentLoaded', () => {
-    window.SolverEngine = new ChemistrySparkSolver();
-});
+new UltraThermoSolver();
