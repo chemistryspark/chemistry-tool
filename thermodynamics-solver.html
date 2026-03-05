@@ -4,71 +4,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JEE/GATE Thermodynamics Solver</title>
+    <title>Chemistry Spark Lab | Advanced Solver</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script>
-        window.MathJax = { tex: { inlineMath: [['$', '$']] } };
-    </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <style>
-        :root { --accent: #00ffd5; --card-bg: #1e293b; --text: #f8fafc; }
-        body { background: #0f172a; color: var(--text); font-family: 'Inter', sans-serif; padding-top: 50px; }
-        .calc-card { background: var(--card-bg); border-radius: 15px; padding: 25px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        /* VISIBILITY FIX: Ensuring numbers are dark/visible in white boxes or white on dark */
-        .form-label { color: var(--accent); font-weight: 700; font-size: 0.9rem; }
-        .form-control { background: #0f172a !important; color: white !important; border: 1px solid #334155 !important; font-weight: 600; }
-        .form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 0.25rem rgba(0, 255, 213, 0.2); }
-        
-        .result-box { background: rgba(0,0,0,0.3); border: 1px solid var(--accent); border-radius: 12px; padding: 20px; display: none; margin-top: 20px; }
-        .res-label { font-size: 0.75rem; color: var(--accent); text-transform: uppercase; font-weight: 800; }
-        .res-value { font-size: 1.5rem; font-weight: 800; color: #fff; }
-        .btn-solve { background: linear-gradient(45deg, #007bff, #00ffd5); color: #0f172a; font-weight: 800; border: none; padding: 12px; border-radius: 10px; width: 100%; transition: 0.3s; }
-        .btn-solve:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,255,213,0.4); }
+        :root {
+            --accent: #00ffd5;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .solver-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 800px;
+            margin: auto;
+        }
+
+        /* Visibility Fix: Ensuring labels and inputs are clear on mobile */
+        .form-label {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control, .form-select {
+            background-color: #0f172a !important;
+            border: 1px solid #334155 !important;
+            color: white !important;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .btn-solve {
+            background: linear-gradient(135deg, #007bff, var(--accent));
+            color: #0f172a;
+            font-weight: 800;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            width: 100%;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        .btn-solve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 213, 0.4);
+        }
+
+        .result-area {
+            display: none; /* Controlled by JS */
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .res-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            text-align: center;
+        }
+
+        .res-val {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .res-lbl {
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
 
-<div class="container mb-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="calc-card">
-                <h3 class="text-center mb-4">Advanced Thermo Solver <span class="badge bg-danger">JEE / GATE</span></h3>
-                
-                <div class="row g-3">
-                    <div class="col-md-3"><label class="form-label">Moles ($n$)</label><input type="number" id="n" class="form-control" value="1"></div>
-                    <div class="col-md-3"><label class="form-label">$T_1$ (Kelvin)</label><input type="number" id="T1" class="form-control" placeholder="300"></div>
-                    <div class="col-md-3"><label class="form-label">$T_2$ (Kelvin)</label><input type="number" id="T2" class="form-control" placeholder="400"></div>
-                    <div class="col-md-3"><label class="form-label">Poly Index ($x$)</label><input type="number" id="poly_x" class="form-control" value="1.4" step="0.1"></div>
-                    
-                    <div class="col-md-3"><label class="form-label">$V_1$ (Liters)</label><input type="number" id="V1" class="form-control" placeholder="22.4"></div>
-                    <div class="col-md-3"><label class="form-label">$V_2$ (Liters)</label><input type="number" id="V2" class="form-control" placeholder="44.8"></div>
-                    <div class="col-md-3"><label class="form-label">$C_v$ Const ($a$)</label><input type="number" id="cv_a" class="form-control" value="12.47"></div>
-                    <div class="col-md-3"><label class="form-label">$C_v$ Slope ($b$)</label><input type="number" id="cv_b" class="form-control" value="0"></div>
-                    
-                    <div class="col-12 mt-4">
-                        <button id="solve-btn" class="btn btn-solve">ANALYZE PROCESS</button>
-                    </div>
-                </div>
+    <div class="solver-card">
+        <h2 class="text-center mb-4">Universal Thermodynamics Solver</h2>
+        <p class="text-center text-secondary small">JEE Advanced & GATE High-Power Engine</p>
 
-                <div id="result-area" class="result-box">
-                    <div class="row text-center gy-4">
-                        <div class="col-md-4"><div class="res-label">Work ($W$)</div><div id="res_w" class="res-value">0</div></div>
-                        <div class="col-md-4"><div class="res-label">Internal Energy ($\Delta U$)</div><div id="res_u" class="res-value">0</div></div>
-                        <div class="col-md-4"><div class="res-label">Heat ($Q$)</div><div id="res_q" class="res-value">0</div></div>
-                        <div class="col-md-6"><div class="res-label">Entropy ($\Delta S$)</div><div id="res_s" class="res-value">0</div></div>
-                        <div class="col-md-6"><div class="res-label">Final Pressure ($P_2$)</div><div id="res_p2" class="res-value">0</div></div>
-                    </div>
-                    <div class="mt-4 p-3 border-top border-secondary small text-info text-center">
-                        Calculated using $\Delta U = \int n(a+bT)dT$ and $PV^x = C$
-                    </div>
+        <div class="row g-3">
+            <div class="col-md-4 col-6">
+                <label class="form-label">Moles ($n$)</label>
+                <input type="number" id="n" class="form-control" value="1">
+            </div>
+            <div class="col-md-4 col-6">
+                <label class="form-label">$T_1$ (K)</label>
+                <input type="number" id="t1" class="form-control" placeholder="298">
+            </div>
+            <div class="col-md-4 col-12">
+                <label class="form-label">$T_2$ (K)</label>
+                <input type="number" id="t2" class="form-control" placeholder="400">
+            </div>
+
+            <div class="col-md-4 col-6">
+                <label class="form-label">$V_1$ (L)</label>
+                <input type="number" id="v1" class="form-control" placeholder="22.4">
+            </div>
+            <div class="col-md-4 col-6">
+                <label class="form-label">$V_2$ (L)</label>
+                <input type="number" id="v2" class="form-control" placeholder="44.8">
+            </div>
+            <div class="col-md-4 col-12">
+                <label class="form-label">Poly Index ($x$)</label>
+                <input type="number" id="poly_x" class="form-control" value="1.4" step="0.1">
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">$C_v$ Const ($a$)</label>
+                <input type="number" id="cv_a" class="form-control" value="12.47">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">$C_v$ Slope ($b$)</label>
+                <input type="number" id="cv_b" class="form-control" value="0">
+            </div>
+
+            <div class="col-12">
+                <button id="analyze-btn" class="btn btn-solve">ANALYZE PROCESS</button>
+            </div>
+        </div>
+
+        <div id="result-area" class="result-area">
+            <div class="res-grid">
+                <div>
+                    <div class="res-lbl">Internal Energy ($\Delta U$)</div>
+                    <div id="res_u" class="res-val">0 J</div>
                 </div>
+                <div>
+                    <div class="res-lbl">Work ($W$)</div>
+                    <div id="res_w" class="res-val">0 J</div>
+                </div>
+                <div>
+                    <div class="res-lbl">Heat ($Q$)</div>
+                    <div id="res_q" class="res-val">0 J</div>
+                </div>
+            </div>
+            <div class="mt-3 pt-2 border-top border-secondary text-center small text-secondary">
+                Formula: $\Delta U = \int n(a + bT) dT$ | $W = \frac{nR(T_2-T_1)}{1-x}$
             </div>
         </div>
     </div>
-</div>
 
-<script src="thermodynamics-solver.js"></script>
+    <script src="js/thermodynamics-solver.js"></script>
 </body>
 </html>
