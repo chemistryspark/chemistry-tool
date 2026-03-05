@@ -2,123 +2,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Thermodynamics Solver - ChemistrySpark</title>
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
- <style>
- * {
- margin: 0;
- padding: 0;
- box-sizing: border-box;
- }
- 
- body {
- font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
- background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
- min-height: 100vh;
- padding: 20px;
- }
- 
- .container {
- max-width: 1200px;
- margin: 0 auto;
- background: white;
- border-radius: 15px;
- box-shadow: 0 20px 40px rgba(0,0,0,0.1);
- overflow: hidden;
- }
- 
- header {
- background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
- color: white;
- padding: 30px;
- text-align: center;
- }
- 
- header h1 {
- font-size: 2.5em;
- margin-bottom: 10px;
- }
- 
- header p {
- font-size: 1.1em;
- opacity: 0.9;
- }
- 
- .nav-tabs {
- display: flex;
- background: #f8f9fa;
- border-bottom: 2px solid #dee2e6;
- overflow-x: auto;
- }
- 
- .nav-tab {
- padding: 15px 30px;
- background: none;
- border: none;
- cursor: pointer;
- font-size: 1em;
- color: #6c757d;
- border-bottom: 3px solid transparent;
- transition: all 0.3s;
- }
- 
- .nav-tab.active {
- color: #ff6b6b;
- border-bottom-color: #ff6b6b;
- }
- 
- .nav-tab:hover:not(.active) {
- background: #e9ecef;
- }
- 
- .tab-content {
- display: none;
- padding: 30px;
- }
- 
- .tab-content.active {
- display: block;
- }
- 
- .input-group {
- margin-bottom: 20px;
- }
- 
- .input-group label {
- display: block;
- margin-bottom: 5px;
- font-weight: 500;
- color: #495057;
- }
- 
- .input-group input, .input-group select {
- width: 100%;
- padding: 10px;
- border: 2px solid #ced4da;
- border-radius: 5px;
- font-size: 1em;
- transition: border-color 0.3s;
- }
- 
- .input-group input:focus, .input-group select:focus {
- outline: none;
- border-color: #ff6b6b;
- }
- 
- button {
- background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
- color: white;
- border: none;
- padding: 12px 30px;
- border-radius: 5px;
- cursor: pointer;
- font-size: 1em;
- transition: transform 0.3s, box-shadow 0.3s;
- }
- 
- button:hover {
- transform: translateY(-2px);
- box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
- }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JEE/GATE Thermodynamics Solver</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+        window.MathJax = { tex: { inlineMath: [['$', '$']] } };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root { --accent: #00ffd5; --card-bg: #1e293b; --text: #f8fafc; }
+        body { background: #0f172a; color: var(--text); font-family: 'Inter', sans-serif; padding-top: 50px; }
+        .calc-card { background: var(--card-bg); border-radius: 15px; padding: 25px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* VISIBILITY FIX: Ensuring numbers are dark/visible in white boxes or white on dark */
+        .form-label { color: var(--accent); font-weight: 700; font-size: 0.9rem; }
+        .form-control { background: #0f172a !important; color: white !important; border: 1px solid #334155 !important; font-weight: 600; }
+        .form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 0.25rem rgba(0, 255, 213, 0.2); }
+        
+        .result-box { background: rgba(0,0,0,0.3); border: 1px solid var(--accent); border-radius: 12px; padding: 20px; display: none; margin-top: 20px; }
+        .res-label { font-size: 0.75rem; color: var(--accent); text-transform: uppercase; font-weight: 800; }
+        .res-value { font-size: 1.5rem; font-weight: 800; color: #fff; }
+        .btn-solve { background: linear-gradient(45deg, #007bff, #00ffd5); color: #0f172a; font-weight: 800; border: none; padding: 12px; border-radius: 10px; width: 100%; transition: 0.3s; }
+        .btn-solve:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,255,213,0.4); }
+    </style>
+</head>
+<body>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="calc-card">
+                <h3 class="text-center mb-4">Advanced Thermo Solver <span class="badge bg-danger">JEE / GATE</span></h3>
+                
+                <div class="row g-3">
+                    <div class="col-md-3"><label class="form-label">Moles ($n$)</label><input type="number" id="n" class="form-control" value="1"></div>
+                    <div class="col-md-3"><label class="form-label">$T_1$ (Kelvin)</label><input type="number" id="T1" class="form-control" placeholder="300"></div>
+                    <div class="col-md-3"><label class="form-label">$T_2$ (Kelvin)</label><input type="number" id="T2" class="form-control" placeholder="400"></div>
+                    <div class="col-md-3"><label class="form-label">Poly Index ($x$)</label><input type="number" id="poly_x" class="form-control" value="1.4" step="0.1"></div>
+                    
+                    <div class="col-md-3"><label class="form-label">$V_1$ (Liters)</label><input type="number" id="V1" class="form-control" placeholder="22.4"></div>
+                    <div class="col-md-3"><label class="form-label">$V_2$ (Liters)</label><input type="number" id="V2" class="form-control" placeholder="44.8"></div>
+                    <div class="col-md-3"><label class="form-label">$C_v$ Const ($a$)</label><input type="number" id="cv_a" class="form-control" value="12.47"></div>
+                    <div class="col-md-3"><label class="form-label">$C_v$ Slope ($b$)</label><input type="number" id="cv_b" class="form-control" value="0"></div>
+                    
+                    <div class="col-12 mt-4">
+                        <button id="solve-btn" class="btn btn-solve">ANALYZE PROCESS</button>
+                    </div>
+                </div>
+
+                <div id="result-area" class="result-box">
+                    <div class="row text-center gy-4">
+                        <div class="col-md-4"><div class="res-label">Work ($W$)</div><div id="res_w" class="res-value">0</div></div>
+                        <div class="col-md-4"><div class="res-label">Internal Energy ($\Delta U$)</div><div id="res_u" class="res-value">0</div></div>
+                        <div class="col-md-4"><div class="res-label">Heat ($Q$)</div><div id="res_q" class="res-value">0</div></div>
+                        <div class="col-md-6"><div class="res-label">Entropy ($\Delta S$)</div><div id="res_s" class="res-value">0</div></div>
+                        <div class="col-md-6"><div class="res-label">Final Pressure ($P_2$)</div><div id="res_p2" class="res-value">0</div></div>
+                    </div>
+                    <div class="mt-4 p-3 border-top border-secondary small text-info text-center">
+                        Calculated using $\Delta U = \int n(a+bT)dT$ and $PV^x = C$
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="solver.js"></script>
+</body>
+</html>
