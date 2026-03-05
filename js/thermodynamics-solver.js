@@ -1,315 +1,90 @@
 /**
- * Thermodynamics Problem Solver - JavaScript Version for GitHub Pages
- * Designed for JEE Advanced and GATE examinations
- * Author: ChemistrySpark
+ * Chemistry Spark Lab - Advanced Thermodynamics Solver (JEE/GATE Edition)
+ * Handles: Real Gases, Variable Cv Integration, Entropy, and Polytropic Work.
  */
 
-// Physical constants (SI units)
-const R = 8.314; // Universal gas constant (J/mol·K)
-const R_air = 287.05; // Specific gas constant for air (J/kg·K)
-const k_air = 1.4; // Specific heat ratio for air
-const cp_air = 1005; // Specific heat at constant pressure for air (J/kg·K)
-const cv_air = 718; // Specific heat at constant volume for air (J/kg·K)
+const R = 8.314; 
 
-// Enums for process and cycle types
-const ProcessType = {
- ISOTHERMAL: "isothermal",
- ISOBARIC: "isobaric", 
- ISOCHORIC: "isochoric",
- ADIABATIC: "adiabatic",
- POLYTROPIC: "polytropic"
-};
+class ThermodynamicsEngine {
+    // 1. Van der Waals Real Gas Solver (P = nRT/(V-nb) - an^2/V^2)
+    calculateRealGasP(n, V, T, a, b) {
+        if (V <= n * b) throw new Error("Volume is less than excluded volume (V < nb)");
+        const P = (n * R * T) / (V - n * b) - (a * Math.pow(n, 2) / Math.pow(V, 2));
+        return P; // Returns in Pascals
+    }
 
-const CycleType = {
- CARNOT: "carnot",
- OTTO: "otto",
- DIESEL: "diesel",
- RANKINE: "rankine"
-};
+    // 2. Variable Heat Capacity Integration (ΔU = ∫ n * (a + bT) dT)
+    calculateDeltaU(n, T1, T2, coeff_a, coeff_b) {
+        // Integral of (a + bT) is aT + (b/2)T^2
+        const integral = (T) => (coeff_a * T) + (0.5 * coeff_b * Math.pow(T, 2));
+        return n * (integral(T2) - integral(T1));
+    }
 
-class ThermodynamicState {
- constructor(P = 0, V = 0, T = 0, n = 0, mass = 0) {
- this.P = P;
- this.V = V;
- this.T = T;
- this.n = n;
- this.mass = mass;
- 
- // Validate inputs
- if (P < 0) throw new Error("Pressure cannot be negative");
- if (T < 0) throw new Error("Temperature cannot be negative");
- if (V < 0) throw new Error("Volume cannot be negative");
- if (mass < 0) throw new Error("Mass cannot be negative");
- }
+    // 3. Polytropic Work (PV^x = C) - Most common JEE Advanced process
+    calculateWork(P1, V1, P2, V2, x) {
+        if (Math.abs(x - 1) < 1e-5) {
+            return P1 * V1 * Math.log(V2 / V1); // Isothermal case
+        }
+        return (P2 * V2 - P1 * V1) / (1 - x);
+    }
+
+    // 4. Entropy Change (Total) - ΔS = nCv ln(T2/T1) + nR ln(V2/V1)
+    calculateEntropy(n, T1, T2, V1, V2, Cv_avg) {
+        const dS = (n * Cv_avg * Math.log(T2 / T1)) + (n * R * Math.log(V2 / V1));
+        return dS;
+    }
 }
 
-class ThermodynamicSolver {
- constructor() {
- this.solutions = {};
- }
- 
- // Ideal Gas Law: PV = nRT
- solveIdealGas(P, V, n = 0) {
- const T = (P * V) / (n * R);
- return { T, unit: "K" };
- }
- 
- // Calculate work for different processes
- calculateWork(process, P1, V1, P2 = null, V2 = null, n = 0, gamma = k_air) {
- let work = 0;
- 
- switch(process) {
- case ProcessType.ISOBARIC:
- if (!P2 || !V2) throw new Error("P2 and V2 required for isobaric process");
- work = P1 * (V2 - V1);
- break;
- 
- case ProcessType.ISOCHORIC:
- if (V1 !== V2) throw new Error("V1 must equal V2 for isochoric process");
- work = 0;
- break;
- 
- case ProcessType.ISOTHERMAL:
- if (!n) n = 1;
- if (!P2 || !V2) throw new Error("P2 and V2 required for isothermal process");
- work = P1 * V1 * Math.log(V2 / V1);
- break;
- 
- case ProcessType.ADIABATIC:
- if (!P2 || !V2) throw new Error("P2 and V2 required for adiabatic process");
- work = (P1 * V1 - P2 * V2) / (gamma - 1);
- break;
- 
- case ProcessType.POLYTROPIC:
- if (!P2 || !V2) throw new Error("P2 and V2 required for polytropic process");
- work = (P2 * V2 - P1 * V1) / (1 - gamma);
- break;
- }
- 
- return { work: Math.abs(work), unit: "J" };
- }
- 
- // Carnot cycle analysis
- analyzeCarnotCycle(TH, TC, QH) {
- const efficiency = 1 - (TC / TH);
- const QC = QH * (TC / TH);
- const work = QH - QC;
- 
- return {
- efficiency,
- QH,
- QC,
- work,
- COP_refrigerator: TC / (TH - TC),
- COP_heat_pump: TH / (TH - TC)
- };
- }
- 
- // Refrigeration cycle analysis
- analyzeRefrigeration(TH, TC) {
- return {
- COP_refrigerator: TC / (TH - TC),
- COP_heat_pump: TH / (TH - TC)
- };
- }
- 
- // Gas mixture properties
- analyzeGasMixture(gases) {
- const totalMoles = gases.reduce((sum, gas) => sum + gas.moles, 0);
- 
- return {
- totalMoles,
- partialPressures: gases.map(gas => 
- gas.moles * R * gas.T / gas.V
- ),
- cp_mix: gases.reduce((sum, gas) => 
- sum + gas.moles * (gas.cp || 29.1), 0
- ) / totalMoles,
- cv_mix: gases.reduce((sum, gas) => 
- sum + gas.moles * (gas.cv || 20.8), 0
- ) / totalMoles,
- gamma_mix: (gases.reduce((sum, gas) => 
- sum + gas.moles * (gas.cp || 29.1), 0
- ) / totalMoles) / (gases.reduce((sum, gas) => 
- sum + gas.moles * (gas.cv || 20.8), 0
- ) / totalMoles)
- };
- }
-}
-
-// UI Controller for GitHub Pages integration
 class ThermodynamicsUI {
- constructor() {
- this.solver = new ThermodynamicSolver();
- this.initializeUI();
- }
- 
- initializeUI() {
- // Set up event listeners
- this.setupEventListeners();
- // Load saved problems
- this.loadSavedProblems();
- }
- 
- setupEventListeners() {
- // Process calculation buttons
- document.getElementById('solve-isothermal').addEventListener('click', () => {
- this.solveIsothermal();
- });
- 
- document.getElementById('solve-adiabatic').addEventListener('click', () => {
- this.solveAdiabatic();
- });
- 
- document.getElementById('solve-carnot').addEventListener('click', () => {
- this.solveCarnot();
- });
- 
- document.getElementById('solve-refrigeration').addEventListener('click', () => {
- this.solveRefrigeration();
- });
- 
- // Save/Load functionality
- document.getElementById('save-problem').addEventListener('click', () => {
- this.saveProblem();
- });
- 
- document.getElementById('load-problem').addEventListener('click', () => {
- this.loadProblem();
- });
- }
- 
- solveIsothermal() {
- try {
- const P1 = parseFloat(document.getElementById('P1').value) * 100000;
- const V1 = parseFloat(document.getElementById('V1').value);
- const V2 = parseFloat(document.getElementById('V2').value);
- const T = parseFloat(document.getElementById('T').value);
- const n = parseFloat(document.getElementById('n').value) || 1;
- 
- const P2 = P1 * V1 / V2;
- const work = this.solver.calculateWork(ProcessType.ISOTHERMAL, P1, V1, P2, V2, n, T);
- const heat = work.work; // ΔU = 0 for isothermal
- 
- this.displayResult('isothermal-result', {
- finalPressure: P2,
- workDone: work,
- heatAdded: { value: heat, unit: "J" },
- formula: "W = nRT ln(V₂/V₁) = P₁V₁ ln(V₂/V₁)"
- });
- } catch (error) {
- this.displayError('isothermal-result', error.message);
- }
- }
- 
- solveAdiabatic() {
- try {
- const P1 = parseFloat(document.getElementById('P1').value) * 100000;
- const V1 = parseFloat(document.getElementById('V1').value);
- const gamma = parseFloat(document.getElementById('gamma').value) || k_air;
- 
- const V2 = parseFloat(document.getElementById('V2').value);
- const P2 = P1 * Math.pow(V1 / V2, gamma);
- const work = this.solver.calculateWork(ProcessType.ADIABATIC, P1, V1, P2, V2, 0, gamma);
- 
- this.displayResult('adiabatic-result', {
- finalPressure: P2,
- workDone: work,
- formula: "W = (P₁V₁ - P₂V₂)/(γ - 1)"
- });
- } catch (error) {
- this.displayError('adiabatic-result', error.message);
- }
- }
- 
- solveCarnot() {
- try {
- const TH = parseFloat(document.getElementById('TH').value);
- const TC = parseFloat(document.getElementById('TC').value);
- const QH = parseFloat(document.getElementById('QH').value) * 1000;
- 
- const results = this.solver.analyzeCarnotCycle(TH, TC, QH);
- 
- this.displayResult('carnot-result', {
- efficiency: { 
- value: results.efficiency * 100, 
- unit: "%" 
- },
- workOutput: { value: results.work, unit: "J" },
- heatRejected: { value: Math.abs(results.QC), unit: "J" },
- COP_R: { value: results.COP_refrigerator, unit: "dimensionless" },
- COP_HP: { value: results.COP_heat_pump, unit: "dimensionless" },
- formula: "η = 1 - T_C/T_H"
- });
- } catch (error) {
- this.displayError('carnot-result', error.message);
- }
- }
- 
- solveRefrigeration() {
- try {
- const TH = parseFloat(document.getElementById('TH').value);
- const TC = parseFloat(document.getElementById('TC').value);
- 
- const results = this.solver.analyzeRefrigeration(TH, TC);
- 
- this.displayResult('refrigeration-result', {
- COP_refrigerator: { value: results.COP_refrigerator, unit: "dimensionless" },
- COP_heat_pump: { value: results.COP_heat_pump, unit: "dimensionless" },
- formula: "COP_R = T_C/(T_H - T_C)"
- });
- } catch (error) {
- this.displayError('refrigeration-result', error.message);
- }
- }
- 
- displayResult(elementId, results) {
- const container = document.getElementById(elementId);
- let html = '<div class="result-box">';
- 
- for (const [key, value] of Object.entries(results)) {
- if (typeof value === 'object' && value.value !== undefined) {
- html += `<div class="result-item">
- <span class="label">${key}:</span>
- <span class="value">${value.value.toFixed(4)} ${value.unit || ''}</span>
- </div>`;
- } else if (typeof value === 'string') {
- html += `<div class="result-item formula">
- <span class="formula-label">Formula:</span>
- <span class="formula-value">${value}</span>
- </div>`;
- }
- }
- 
- html += '</div>';
- container.innerHTML = html;
- }
- 
- displayError(elementId, message) {
- const container = document.getElementById(elementId);
- container.innerHTML = `<div class="error-box">Error: ${message}</div>`;
- }
- 
- saveProblem() {
- const problem = {
- type: "thermodynamics",
- timestamp: new Date().toISOString(),
- problem: document.getElementById('problem-input').value,
- solution: this.currentSolution
- };
- 
- localStorage.setItem('thermoProblem_' + Date.now(), JSON.stringify(problem));
- alert("Problem saved successfully!");
- }
- 
- loadProblems() {
- const problems = JSON.parse(localStorage.getItem('thermoProblems') || '[]');
- // Display list of saved problems
- }
+    constructor() {
+        this.engine = new ThermodynamicsEngine();
+        this.init();
+    }
+
+    init() {
+        document.getElementById('solve-btn').addEventListener('click', () => this.solve());
+    }
+
+    solve() {
+        try {
+            const n = parseFloat(document.getElementById('n').value) || 1;
+            const T1 = parseFloat(document.getElementById('T1').value);
+            const T2 = parseFloat(document.getElementById('T2').value);
+            const V1 = parseFloat(document.getElementById('V1').value) / 1000; // L to m3
+            const V2 = parseFloat(document.getElementById('V2').value) / 1000; // L to m3
+            const x = parseFloat(document.getElementById('poly_x').value) || 1;
+            
+            // Advanced Constants
+            const a_coeff = parseFloat(document.getElementById('cv_a').value) || 12.47; // Default 1.5R
+            const b_coeff = parseFloat(document.getElementById('cv_b').value) || 0;
+            
+            // Calculation
+            const deltaU = this.engine.calculateDeltaU(n, T1, T2, a_coeff, b_coeff);
+            
+            // Pressure calculation (Ideal vs Real)
+            const P1 = (n * R * T1) / V1; 
+            const P2 = P1 * Math.pow(V1 / V2, x);
+            
+            const work = this.engine.calculateWork(P1, V1, P2, V2, x);
+            const q = deltaU - work; // 1st Law: Q = ΔU - W (Chemistry Sign Convention)
+            const dS = this.engine.calculateEntropy(n, T1, T2, V1, V2, a_coeff);
+
+            this.updateUI(work, deltaU, q, dS, P2);
+        } catch (err) {
+            alert("Input Error: " + err.message);
+        }
+    }
+
+    updateUI(w, u, q, s, p2) {
+        document.getElementById('res_w').innerHTML = `${w.toFixed(2)} J`;
+        document.getElementById('res_u').innerHTML = `${u.toFixed(2)} J`;
+        document.getElementById('res_q').innerHTML = `${q.toFixed(2)} J`;
+        document.getElementById('res_s').innerHTML = `${s.toFixed(2)} J/K`;
+        document.getElementById('res_p2').innerHTML = `${(p2 / 100000).toFixed(3)} bar`;
+        
+        document.getElementById('result-area').style.display = 'block';
+        MathJax.typesetPromise();
+    }
 }
 
-// Initialize UI when page loads
-document.addEventListener('DOMContentLoaded', () => {
- new ThermodynamicsUI();
-});
-
+document.addEventListener('DOMContentLoaded', () => new ThermodynamicsUI());
