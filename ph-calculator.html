@@ -2,41 +2,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-<h1>pH Calculator (Strong & Weak Acids)</h1>
-
-<p>
-The pH calculator helps determine the acidity or basicity of a solution
-based on hydrogen ion concentration.
-</p>
-
-<h2>What is pH?</h2>
-
-<p>
-pH is defined as the negative logarithm of hydrogen ion concentration.
-</p>
-
-<p><b>Formula:</b></p>
-
-<p>pH = -log[H⁺]</p>
-
-<p>
-If the hydrogen ion concentration is greater than 10⁻⁷ M,
-the solution is acidic. If it is less than 10⁻⁷ M,
-the solution is basic.
-</p>
-
-<h2>Example Calculation</h2>
-
-<p>
-If hydrogen ion concentration is 10⁻³ M:
-</p>
-
-<p>
-pH = -log(10⁻³) = 3
-</p>
-
-  
   <title>Advanced pH Calculator</title>
+  <meta name="description" content="Advanced pH Calculator for strong acids, weak acids, strong bases and weak bases. Calculate pH instantly with steps and interactive pH scale chart. Useful for NEET, IIT-JEE, CSIR-NET and chemistry students.">
+
+<meta name="keywords" content="pH calculator, strong acid pH calculator, weak acid pH calculator, chemistry calculator, pH formula, hydrogen ion concentration calculator, NEET chemistry tools">
+
+<meta name="author" content="Sudhir Nama">
+
+<link rel="canonical" href="https://chemistryspark.github.io/chemistry-tool/ph-calculator.html">
+
+<meta name="robots" content="index, follow">
+  <meta property="og:title" content="Advanced pH Calculator | Chemistry Spark Lab">
+
+<meta property="og:description" content="Free advanced pH calculator for acids and bases with solution steps and pH scale chart. Perfect for chemistry students and exam preparation.">
+
+<meta property="og:type" content="website">
+
+<meta property="og:url" content="https://chemistryspark.github.io/chemistry-tool/ph-calculator.html">
+
+<meta property="og:image" content="https://sudhirnama.in/images/chemistry-tools-preview.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Chart.js -->
@@ -223,22 +207,47 @@ pH = -log(10⁻³) = 3
     margin-top: 80px !important;
 }
   </style>
-  <h2>Why Use a pH Calculator?</h2>
+  
+  <script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "WebApplication",
+ "name": "Advanced pH Calculator",
+ "url": "https://chemistryspark.github.io/chemistry-tool/ph-calculator.html",
+ "applicationCategory": "EducationalApplication",
+ "operatingSystem": "All",
+ "description": "Advanced pH calculator to compute pH of strong acids, weak acids, strong bases and weak bases with solution steps and interactive pH scale chart.",
+ "author": {
+   "@type": "Person",
+   "name": "Sudhir Nama",
+   "url": "https://sudhirnama.in"
+ },
+ "publisher": {
+   "@type": "Organization",
+   "name": "Chemistry Spark Publication"
+ }
+}
+</script>
 
-<p>
-A pH calculator allows students and researchers to quickly determine
-the acidity of a solution without manual logarithmic calculations.
-</p>
-
-<p>
-This tool is useful for chemistry students preparing for
-competitive exams such as NEET, IIT-JEE, CSIR-NET, and university examinations.
-</p>
-
-<p>
-Learn more chemistry concepts at
-<a href="https://sudhirnama.in">SudhirNama.in</a>.
-</p>
+  <script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [
+  {
+   "@type": "ListItem",
+   "position": 1,
+   "name": "Chemistry Tools",
+   "item": "https://chemistryspark.github.io/chemistry-tool/"
+  },
+  {
+   "@type": "ListItem",
+   "position": 2,
+   "name": "pH Calculator"
+  }
+ ]
+}
+</script>
 </head>
 <body>
   <nav class="navbar">
@@ -292,12 +301,31 @@ Learn more chemistry concepts at
 
       <div class="footer">
         <a class="back" href="index.html">⬅ Back to Dashboard</a>
-        <div style="opacity:0.9">Developed by Sudhir Nama</div>
+        <div style="opacity:0.9">
+Developed by <a href="https://sudhirnama.in" style="color:#00ffd5;">Sudhir Nama</a>
+</div>
       </div>
 
     </div>
   </div>
 
+
+  <section style="max-width:700px;margin:40px auto;color:white;">
+<h2>Frequently Asked Questions</h2>
+
+<h3>What is pH?</h3>
+<p>pH is the negative logarithm of hydrogen ion concentration in a solution. It measures the acidity or basicity of a chemical solution.</p>
+
+<h3>What is the formula for pH?</h3>
+<p>The formula is pH = −log[H⁺], where [H⁺] is the hydrogen ion concentration in molarity.</p>
+
+<h3>What is neutral pH?</h3>
+<p>At 25°C, a neutral solution has pH = 7 because [H⁺] = 10⁻⁷ M.</p>
+
+<h3>Who can use this calculator?</h3>
+<p>This pH calculator is useful for students preparing for NEET, IIT-JEE, CSIR-NET and university chemistry exams.</p>
+</section>
+  
 <script>
 /* Utility: decent float parse (supports e notation) */
 function parseNumber(x){
@@ -476,7 +504,9 @@ document.querySelectorAll('#concentration, #ka, #temp').forEach(inp => {
 });
 
 /* initial chart (neutral) */
-renderChart(7.00);
+window.addEventListener("load", function(){
+  renderChart(7.00);
+});
 </script>
 
 </body>
