@@ -261,6 +261,60 @@ font-size:16px;
 }
 
 }
+
+    /* PH INFO SECTION */
+
+.ph-info-box{
+max-width:900px;
+margin:30px auto;
+padding:25px;
+background:rgba(255,255,255,0.05);
+border-radius:14px;
+backdrop-filter:blur(10px);
+color:#e8f6ff;
+line-height:1.7;
+box-sizing:border-box;
+}
+
+.ph-info-box h2{
+font-size:26px;
+margin-bottom:15px;
+color:#ffffff;
+}
+
+.ph-info-box h3{
+margin-top:18px;
+color:#ffffff;
+}
+
+.ph-info-box p{
+margin-bottom:12px;
+color:#d6ecff;
+}
+
+.ph-info-box ul{
+padding-left:20px;
+margin-top:10px;
+}
+
+.ph-info-box li{
+margin-bottom:6px;
+}
+
+/* MOBILE FIX */
+
+@media (max-width:768px){
+
+.ph-info-box{
+margin:20px 12px;
+padding:20px;
+}
+
+.ph-info-box h2{
+font-size:22px;
+}
+
+}
   </style>
   
   <script type="application/ld+json">
@@ -305,6 +359,9 @@ font-size:16px;
 </script>
 </head>
 <body>
+  <nav class="navbar">
+    <a class="brand-text" href="index.html">Chemistry Spark Lab</a>
+</nav>
   <section class="ph-info">
 <h2>Understanding pH in Chemistry</h2>
 
@@ -336,10 +393,6 @@ Solutions with pH less than 7 are acidic, while solutions with pH greater than 7
 </p>
 
 </section>
-  
-  <nav class="navbar">
-    <a class="brand-text" href="index.html">Chemistry Spark Lab</a>
-</nav>
   <div class="wrap">
     <div class="card" role="main" aria-labelledby="title">
       <h1 id="title">Advanced pH Calculator</h1>
