@@ -262,56 +262,55 @@ font-size:16px;
 
 }
 
-    /* PH INFO SECTION */
+    /* PH CONTENT SAFE CONTAINER */
 
-.ph-info-box{
-max-width:900px;
-margin:30px auto;
-padding:25px;
-background:rgba(255,255,255,0.05);
-border-radius:14px;
-backdrop-filter:blur(10px);
-color:#e8f6ff;
-line-height:1.7;
-box-sizing:border-box;
+.ph-content-container{
+max-width:900px !important;
+margin:40px auto !important;
+padding:25px !important;
+background:rgba(255,255,255,0.05) !important;
+border-radius:14px !important;
+backdrop-filter:blur(10px) !important;
+box-sizing:border-box !important;
 }
 
-.ph-info-box h2{
-font-size:26px;
-margin-bottom:15px;
-color:#ffffff;
+.ph-content-container h2{
+color:#ffffff !important;
+font-size:26px !important;
+margin-bottom:15px !important;
 }
 
-.ph-info-box h3{
-margin-top:18px;
-color:#ffffff;
+.ph-content-container h3{
+color:#ffffff !important;
+margin-top:20px !important;
 }
 
-.ph-info-box p{
-margin-bottom:12px;
-color:#d6ecff;
+.ph-content-container p{
+color:#d8f0ff !important;
+line-height:1.7 !important;
+margin-bottom:10px !important;
 }
 
-.ph-info-box ul{
-padding-left:20px;
-margin-top:10px;
+.ph-content-container ul{
+padding-left:20px !important;
 }
 
-.ph-info-box li{
-margin-bottom:6px;
+.ph-content-container li{
+color:#d8f0ff !important;
+margin-bottom:6px !important;
 }
 
 /* MOBILE FIX */
 
-@media (max-width:768px){
+@media(max-width:768px){
 
-.ph-info-box{
-margin:20px 12px;
-padding:20px;
+.ph-content-container{
+margin:20px 12px !important;
+padding:20px !important;
 }
 
-.ph-info-box h2{
-font-size:22px;
+.ph-content-container h2{
+font-size:22px !important;
 }
 
 }
@@ -362,20 +361,21 @@ font-size:22px;
   <nav class="navbar">
     <a class="brand-text" href="index.html">Chemistry Spark Lab</a>
 </nav>
-  <section class="ph-info">
+  <section class="ph-content-container">
+
 <h2>Understanding pH in Chemistry</h2>
 
 <p>
-The <strong>pH</strong> of a solution is a measure of its acidity or basicity.
+The <b>pH</b> of a solution measures its acidity or basicity.
 It is defined as the negative logarithm of hydrogen ion concentration.
 </p>
 
 <p>
-<strong>Formula:</strong> pH = −log[H⁺]
+<b>Formula:</b> pH = −log[H⁺]
 </p>
 
 <p>
-Where <strong>[H⁺]</strong> represents the hydrogen ion concentration in mol/L.
+Where <b>[H⁺]</b> represents hydrogen ion concentration in mol/L.
 </p>
 
 <h3>Examples of pH Values</h3>
@@ -383,14 +383,13 @@ Where <strong>[H⁺]</strong> represents the hydrogen ion concentration in mol/L
 <ul>
 <li>Battery Acid → pH ≈ 1</li>
 <li>Lemon Juice → pH ≈ 2</li>
-<li>Pure Water → pH = 7 (Neutral)</li>
+<li>Vinegar → pH ≈ 3</li>
+<li>Pure Water → pH = 7</li>
 <li>Soap Solution → pH ≈ 10</li>
-<li>Ammonia Solution → pH ≈ 11</li>
+<li>Ammonia → pH ≈ 11</li>
 </ul>
 
-<p>
-Solutions with pH less than 7 are acidic, while solutions with pH greater than 7 are basic.
-</p>
+</section>
 
 </section>
   <div class="wrap">
