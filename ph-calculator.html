@@ -206,6 +206,61 @@
 .wrapper, .container {
     margin-top: 80px !important;
 }
+
+    /* SEO Content Section text (mobile safe) */
+.seo-section{
+max-width:900px;
+margin:60px auto;
+padding:25px;
+background:rgba(255,255,255,0.05);
+border-radius:14px;
+backdrop-filter:blur(6px);
+line-height:1.7;
+color:#eef6fb;
+}
+
+.seo-section h2{
+font-size:22px;
+margin-bottom:10px;
+color:#ffffff;
+}
+
+.seo-section h3{
+margin-top:18px;
+color:#00ffd5;
+font-size:17px;
+}
+
+.seo-section p{
+font-size:14px;
+color:#d9e8f0;
+}
+
+.seo-section .example-box{
+background:rgba(0,0,0,0.25);
+padding:12px;
+border-radius:8px;
+margin-top:8px;
+font-size:14px;
+}
+
+/* Mobile Fix */
+@media(max-width:600px){
+
+.seo-section{
+margin:40px 15px;
+padding:18px;
+}
+
+.seo-section h2{
+font-size:19px;
+}
+
+.seo-section h3{
+font-size:16px;
+}
+
+}
   </style>
   
   <script type="application/ld+json">
@@ -310,20 +365,82 @@ Developed by <a href="https://sudhirnama.in" style="color:#00ffd5;">Sudhir Nama<
   </div>
 
 
-  <section style="max-width:700px;margin:40px auto;color:white;">
+  <section class="seo-section">
+
+<h2>Understanding pH in Chemistry</h2>
+
+<p>
+The <b>pH scale</b> is used to measure the acidity or basicity of a chemical solution. 
+It is defined as the negative logarithm of the hydrogen ion concentration.
+</p>
+
+<p>
+<b>Formula:</b> pH = −log[H⁺]
+</p>
+
+<p>
+If the hydrogen ion concentration increases, the pH decreases and the solution becomes more acidic. 
+If hydrogen ion concentration decreases, the solution becomes more basic.
+</p>
+
+<h3>Example 1: Strong Acid</h3>
+
+<div class="example-box">
+If the hydrogen ion concentration is:
+<br><br>
+[H⁺] = 10⁻³ M
+<br><br>
+pH = −log(10⁻³)
+<br>
+pH = 3
+<br><br>
+This indicates a strongly acidic solution.
+</div>
+
+<h3>Example 2: Neutral Solution</h3>
+
+<div class="example-box">
+Pure water at 25°C has:
+<br><br>
+[H⁺] = 10⁻⁷ M
+<br><br>
+pH = 7
+<br><br>
+This is considered a neutral solution.
+</div>
+
+<h3>Example 3: Basic Solution</h3>
+
+<div class="example-box">
+If the hydroxide concentration is:
+<br><br>
+[OH⁻] = 10⁻² M
+<br><br>
+pOH = 2  
+pH = 14 − 2 = 12
+<br><br>
+This represents a basic solution.
+</div>
+
 <h2>Frequently Asked Questions</h2>
 
-<h3>What is pH?</h3>
-<p>pH is the negative logarithm of hydrogen ion concentration in a solution. It measures the acidity or basicity of a chemical solution.</p>
+<h3>What is the pH scale?</h3>
+<p>
+The pH scale ranges from 0 to 14 and measures how acidic or basic a solution is. 
+Values below 7 are acidic, 7 is neutral, and values above 7 are basic.
+</p>
 
-<h3>What is the formula for pH?</h3>
-<p>The formula is pH = −log[H⁺], where [H⁺] is the hydrogen ion concentration in molarity.</p>
+<h3>Why is pH important in chemistry?</h3>
+<p>
+pH helps chemists understand the chemical behavior of acids and bases. 
+It is important in chemical reactions, biological systems, environmental science, and industrial processes.
+</p>
 
-<h3>What is neutral pH?</h3>
-<p>At 25°C, a neutral solution has pH = 7 because [H⁺] = 10⁻⁷ M.</p>
+<h3>Who can use this pH calculator?</h3>
+<p>
+This calculator is useful for students preparing for competitive exams such as NEET, IIT-JEE, CSIR-NET, and university chemistry courses.
+</p>
 
-<h3>Who can use this calculator?</h3>
-<p>This pH calculator is useful for students preparing for NEET, IIT-JEE, CSIR-NET and university chemistry exams.</p>
 </section>
   
 <script>
