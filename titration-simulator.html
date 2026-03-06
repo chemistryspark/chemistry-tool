@@ -265,5 +265,14 @@ function drawGraph(acidType, Ca, Va, Cb, Ka1, Ka2) {
 update();
 </script>
 
+    <div id="footer-container"></div>
+
+<script>
+fetch("footer.html")
+.then(res => res.text())
+.then(data => {
+document.getElementById("footer-container").innerHTML = data;
+});
+</script>
 </body>
 </html>
